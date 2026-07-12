@@ -1,0 +1,52 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environments and package caches
+.venv/
+venv/
+.uv-cache/
+
+# Environment variables
+.env
+.env*
+!.env.sample
+
+# Cache and test artifacts
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.ipynb_checkpoints/
+.coverage
+htmlcov/
+coverage.xml
+
+# Logs
+logs/
+*.log
+
+# Agent files (local only, not part of the homework repo)
+AGENTS.md
+CLAUDE.md
+.codex/
+.claude/
+graphify-out/
+.graphifyignore
+
+# Secrets
+*.secret
+*.pem
+*.key
