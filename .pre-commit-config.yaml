@@ -1,12 +1,6 @@
 repos:
   - repo: local
     hooks:
-      - id: nbstripout
-        name: Strip notebook outputs
-        entry: uv run nbstripout
-        language: system
-        types_or: [jupyter]
-
       - id: ruff
         name: Ruff autofix
         entry: uv run ruff check --fix

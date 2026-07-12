@@ -25,7 +25,6 @@ build-backend = "hatchling.build"
 dev = [
     "black[jupyter]>=26.3,<27",
     "mypy>=1.19,<2",
-    "nbstripout>=0.8,<1",
     "pandas-stubs>=3.0,<4",
     "pre-commit>=4.5,<5",
     "pytest>=9.0,<10",
