@@ -4,6 +4,7 @@ import pytest
 from ml_homework.eda import (
     age_group,
     get_columns_summary,
+    get_target_column,
     iqr_bounds,
     null_summary,
     summary_table,
@@ -24,6 +25,20 @@ def test_get_columns_summary_preserves_columns_and_ignores_null_values() -> None
     assert result["column"].tolist() == ["number", "category"]
     assert result["nunique"].tolist() == [2, 2]
     assert result["unique_values"].tolist() == [[1.0, 2.0], ["a", "b"]]
+
+
+def test_get_target_column_marks_most_frequent_category() -> None:
+    data = pd.DataFrame(
+        {"fuel_type": pd.Series(["petrol", "diesel", "petrol"], dtype="string")}
+    )
+
+    assert get_target_column(data, "fuel_type") == {"petrol": 1, "diesel": 0}
+
+
+def test_get_target_column_returns_empty_mapping_without_categories() -> None:
+    data = pd.DataFrame({"fuel_type": pd.Series([None, None], dtype="string")})
+
+    assert get_target_column(data, "fuel_type") == {}
 
 
 @pytest.mark.parametrize(

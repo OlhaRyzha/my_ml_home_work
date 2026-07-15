@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Hashable, Iterable
 
 import pandas as pd
 
@@ -15,6 +15,16 @@ def get_columns_summary(columns: Iterable[str], data: pd.DataFrame) -> pd.DataFr
             ],
         }
     )
+
+
+def get_target_column(data: pd.DataFrame, column_name: str) -> dict[Hashable, int]:
+    """Encode the most frequent non-null category as 1 and the others as 0."""
+    counts = data[column_name].value_counts()
+    if counts.empty:
+        return {}
+
+    target = counts.idxmax()
+    return {category: int(category == target) for category in counts.index}
 
 
 def column_summary(
