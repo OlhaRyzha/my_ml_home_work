@@ -3,11 +3,27 @@ import pytest
 
 from ml_homework.eda import (
     age_group,
+    get_columns_summary,
     iqr_bounds,
     null_summary,
     summary_table,
     years_from_days,
 )
+
+
+def test_get_columns_summary_preserves_columns_and_ignores_null_values() -> None:
+    data = pd.DataFrame(
+        {
+            "category": ["a", "b", "a", None],
+            "number": [1.0, 1.0, 2.0, None],
+        }
+    )
+
+    result = get_columns_summary(["number", "category"], data)
+
+    assert result["column"].tolist() == ["number", "category"]
+    assert result["nunique"].tolist() == [2, 2]
+    assert result["unique_values"].tolist() == [[1.0, 2.0], ["a", "b"]]
 
 
 @pytest.mark.parametrize(

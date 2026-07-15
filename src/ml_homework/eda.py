@@ -3,6 +3,20 @@ from collections.abc import Iterable
 import pandas as pd
 
 
+def get_columns_summary(columns: Iterable[str], data: pd.DataFrame) -> pd.DataFrame:
+    """Return unique counts and non-null unique values for selected columns."""
+    names = list(columns)
+    return pd.DataFrame(
+        {
+            "column": names,
+            "nunique": [data[column].nunique() for column in names],
+            "unique_values": [
+                data[column].dropna().unique().tolist() for column in names
+            ],
+        }
+    )
+
+
 def column_summary(
     data: pd.DataFrame, null_summary: pd.DataFrame, column: str
 ) -> dict[str, object]:

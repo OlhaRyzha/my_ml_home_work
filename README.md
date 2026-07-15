@@ -13,6 +13,7 @@ extracted into a tested Python package.
 | 03 | Statistics | `notebooks/03_statistics/hw_2_1_hypothesis_testing.ipynb` |
 | 04 | EDA | `notebooks/04_eda/credit_eda.ipynb` |
 | 05 | Linear regression | `notebooks/05_linear_regression/hw_2_1_simple_linear_regression.ipynb` |
+| 05 | Multiple linear regression | `notebooks/05_linear_regression/hw_2_1_multiple_linear_regression.ipynb` |
 
 ## Project Structure
 
@@ -37,6 +38,7 @@ extracted into a tested Python package.
 | `paths` | Canonical filesystem paths (`RAW_DATA_DIR`, `PROCESSED_DATA_DIR`) |
 | `eda` | Missing-value summaries, IQR outlier bounds, feature bucketing |
 | `metrics` | Evaluation metrics (RMSE) |
+| `modeling` | Linear-regression training and coefficient inspection |
 | `optimization` | Full-batch gradient descent |
 | `calculus` | Symbolic differentiation helpers |
 | `visualization` | Reusable matplotlib/seaborn plotting helpers |
