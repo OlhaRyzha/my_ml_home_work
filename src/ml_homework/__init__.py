@@ -1,5 +1,12 @@
 """Public project configuration used by notebooks and Python modules."""
 
+from ml_homework.classification import (
+    compute_auroc_and_build_roc,
+    get_f1_score,
+    predict_and_plot,
+    predict_majority_class,
+    predict_raw_df,
+)
 from ml_homework.eda import get_columns_summary
 from ml_homework.modeling import (
     linear_regression_coefficients,
@@ -20,8 +27,13 @@ __all__ = [
     "PROCESSED_DATA_DIR",
     "PROJECT_ROOT",
     "RAW_DATA_DIR",
+    "compute_auroc_and_build_roc",
     "get_columns_summary",
+    "get_f1_score",
     "linear_regression_coefficients",
+    "predict_and_plot",
+    "predict_majority_class",
+    "predict_raw_df",
     "select_feature_columns",
     "significant_ols_coefficients",
     "train_linear_regression_show_rmse",

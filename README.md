@@ -39,6 +39,7 @@ extracted into a tested Python package.
 | `eda` | Missing-value summaries, IQR outlier bounds, feature bucketing |
 | `metrics` | Evaluation metrics (RMSE) |
 | `modeling` | Linear-regression training and coefficient inspection |
+| `classification` | Binary-classification evaluation, plots, baselines, and inference |
 | `optimization` | Full-batch gradient descent |
 | `calculus` | Symbolic differentiation helpers |
 | `visualization` | Reusable matplotlib/seaborn plotting helpers |
