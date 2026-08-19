@@ -10,6 +10,17 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, auc, confusion_matrix, f1_score, roc_curve
 
 
+def add_age_group(data: pd.DataFrame) -> pd.DataFrame:
+    """Return a copy with age encoded into fixed, interpretable groups."""
+    result = data.copy()
+    result["AgeGroup"] = pd.cut(
+        result["Age"],
+        bins=[-np.inf, 30, 35, 40, 45, 50, 60, np.inf],
+        labels=["up_to_30", "31_35", "36_40", "41_45", "46_50", "51_60", "over_60"],
+    )
+    return result
+
+
 def predict_and_plot(
     model: LogisticRegression,
     inputs: pd.DataFrame,
