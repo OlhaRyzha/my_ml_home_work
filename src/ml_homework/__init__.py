@@ -1,6 +1,7 @@
 """Public project configuration used by notebooks and Python modules."""
 
 from ml_homework.classification import (
+    add_age_group,
     compute_auroc_and_build_roc,
     get_f1_score,
     predict_and_plot,
@@ -27,6 +28,7 @@ __all__ = [
     "PROCESSED_DATA_DIR",
     "PROJECT_ROOT",
     "RAW_DATA_DIR",
+    "add_age_group",
     "compute_auroc_and_build_roc",
     "get_columns_summary",
     "get_f1_score",

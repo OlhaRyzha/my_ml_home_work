@@ -7,12 +7,29 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from ml_homework.classification import (
+    add_age_group,
     compute_auroc_and_build_roc,
     get_f1_score,
     predict_and_plot,
     predict_majority_class,
     predict_raw_df,
 )
+
+
+def test_add_age_group_uses_fixed_boundaries_without_mutating_input() -> None:
+    inputs = pd.DataFrame({"Age": [30, 31, 35, 36, 60, 61]})
+
+    result = add_age_group(inputs)
+
+    assert result["AgeGroup"].astype(str).tolist() == [
+        "up_to_30",
+        "31_35",
+        "31_35",
+        "36_40",
+        "51_60",
+        "over_60",
+    ]
+    assert "AgeGroup" not in inputs.columns
 
 
 @pytest.fixture
