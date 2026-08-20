@@ -2,6 +2,7 @@
 
 from ml_homework.classification import (
     add_age_group,
+    compare_classification_metrics,
     compute_auroc_and_build_roc,
     get_f1_score,
     predict_and_plot,
@@ -9,6 +10,7 @@ from ml_homework.classification import (
     predict_raw_df,
 )
 from ml_homework.eda import get_columns_summary
+from ml_homework.metrics import compare_regression_metrics
 from ml_homework.modeling import (
     linear_regression_coefficients,
     select_feature_columns,
@@ -29,7 +31,9 @@ __all__ = [
     "PROJECT_ROOT",
     "RAW_DATA_DIR",
     "add_age_group",
+    "compare_classification_metrics",
     "compute_auroc_and_build_roc",
+    "compare_regression_metrics",
     "get_columns_summary",
     "get_f1_score",
     "linear_regression_coefficients",

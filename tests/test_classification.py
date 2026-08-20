@@ -4,10 +4,12 @@ import pandas as pd
 import pytest
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from ml_homework.classification import (
     add_age_group,
+    compare_classification_metrics,
     compute_auroc_and_build_roc,
     get_f1_score,
     predict_and_plot,
@@ -30,6 +32,33 @@ def test_add_age_group_uses_fixed_boundaries_without_mutating_input() -> None:
         "over_60",
     ]
     assert "AgeGroup" not in inputs.columns
+
+
+def test_compare_classification_metrics_builds_model_columns() -> None:
+    inputs = pd.DataFrame({"signal": [-2.0, -1.0, 1.0, 2.0]})
+    targets = pd.Series([0, 0, 1, 1])
+    model = Pipeline([("classifier", LogisticRegression(random_state=42))]).fit(
+        inputs, targets
+    )
+
+    result = compare_classification_metrics(
+        {"Baseline": model},
+        inputs,
+        targets,
+        inputs,
+        targets,
+    )
+
+    assert result.columns.tolist() == ["Baseline"]
+    assert result.index.tolist() == [
+        "Train Accuracy",
+        "Validation Accuracy",
+        "Train F1",
+        "Validation F1",
+        "Train AUROC",
+        "Validation AUROC",
+    ]
+    np.testing.assert_allclose(result["Baseline"], 1.0)
 
 
 @pytest.fixture
@@ -56,8 +85,14 @@ def test_predict_and_plot_returns_predictions_and_labeled_plot(
     axis = plt.gca()
 
     np.testing.assert_array_equal(predictions, targets)
-    assert capsys.readouterr().out.strip() == "Accuracy: 100.00%"
+    assert capsys.readouterr().out.strip() == "Accuracy for Validation: 100.00%"
     assert axis.get_title() == "Validation Confusion Matrix"
+    assert {text.get_text() for text in axis.texts} == {
+        "TN\n100.0%",
+        "FP\n0.0%",
+        "FN\n0.0%",
+        "TP\n100.0%",
+    }
     plt.close(figure)
 
 
@@ -84,7 +119,7 @@ def test_compute_auroc_and_build_roc_returns_score_and_plot(
     axis = plt.gca()
 
     assert score == pytest.approx(1.0)
-    assert capsys.readouterr().out.strip() == "AUROC for Validation: 1.00"
+    assert capsys.readouterr().out.strip() == "AUROC for Validation: 1.0000"
     assert axis.get_xlabel() == "False Positive Rate"
     assert len(axis.lines) == 2
     plt.close(figure)

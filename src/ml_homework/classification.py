@@ -7,7 +7,15 @@ import seaborn as sns
 from numpy.typing import NDArray
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, auc, confusion_matrix, f1_score, roc_curve
+from sklearn.metrics import (
+    accuracy_score,
+    auc,
+    confusion_matrix,
+    f1_score,
+    roc_auc_score,
+    roc_curve,
+)
+from sklearn.pipeline import Pipeline
 
 
 def add_age_group(data: pd.DataFrame) -> pd.DataFrame:
@@ -21,6 +29,44 @@ def add_age_group(data: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
+def compare_classification_metrics(
+    models: dict[str, Pipeline],
+    train_inputs: pd.DataFrame,
+    train_targets: pd.Series,
+    val_inputs: pd.DataFrame,
+    val_targets: pd.Series,
+) -> pd.DataFrame:
+    """Compare train and validation metrics for fitted classifiers."""
+    comparison = {}
+
+    for name, model in models.items():
+        train_predictions = model.predict(train_inputs)
+        val_predictions = model.predict(val_inputs)
+        train_probabilities = model.predict_proba(train_inputs)[:, 1]
+        val_probabilities = model.predict_proba(val_inputs)[:, 1]
+
+        comparison[name] = [
+            accuracy_score(train_targets, train_predictions),
+            accuracy_score(val_targets, val_predictions),
+            f1_score(train_targets, train_predictions),
+            f1_score(val_targets, val_predictions),
+            roc_auc_score(train_targets, train_probabilities),
+            roc_auc_score(val_targets, val_probabilities),
+        ]
+
+    return pd.DataFrame(
+        comparison,
+        index=[
+            "Train Accuracy",
+            "Validation Accuracy",
+            "Train F1",
+            "Validation F1",
+            "Train AUROC",
+            "Validation AUROC",
+        ],
+    )
+
+
 def predict_and_plot(
     model: LogisticRegression,
     inputs: pd.DataFrame,
@@ -30,11 +76,34 @@ def predict_and_plot(
     """Predict labels, print accuracy, and plot a normalized confusion matrix."""
     predictions = np.asarray(model.predict(inputs), dtype=float)
     accuracy = accuracy_score(targets, predictions)
-    print(f"Accuracy: {accuracy * 100:.2f}%")
+    print(f"Accuracy for {name}: {accuracy * 100:.2f}%")
 
-    matrix = confusion_matrix(targets, predictions, normalize="true")
+    matrix = confusion_matrix(
+        targets,
+        predictions,
+        labels=[0, 1],
+        normalize="true",
+    )
+    labels = np.array([["TN", "FP"], ["FN", "TP"]])
+    annotations = np.array(
+        [
+            [
+                f"{label}\n{value:.1%}"
+                for label, value in zip(label_row, value_row, strict=True)
+            ]
+            for label_row, value_row in zip(labels, matrix, strict=True)
+        ]
+    )
+
     _, axis = plt.subplots()
-    sns.heatmap(matrix, annot=True, ax=axis)
+    sns.heatmap(
+        matrix,
+        annot=annotations,
+        fmt="",
+        xticklabels=[0, 1],
+        yticklabels=[0, 1],
+        ax=axis,
+    )
     axis.set_xlabel("Prediction")
     axis.set_ylabel("Target")
     axis.set_title(f"{name} Confusion Matrix")
@@ -66,7 +135,7 @@ def compute_auroc_and_build_roc(
         targets, probabilities, pos_label=1
     )
     roc_auc = float(auc(false_positive_rate, true_positive_rate))
-    print(f"AUROC for {name}: {roc_auc:.2f}")
+    print(f"AUROC for {name}: {roc_auc:.4f}")
 
     _, axis = plt.subplots()
     axis.plot(
@@ -74,7 +143,7 @@ def compute_auroc_and_build_roc(
         true_positive_rate,
         color="darkorange",
         linewidth=2,
-        label=f"ROC curve (area = {roc_auc:.2f})",
+        label=f"ROC curve (area = {roc_auc:.4f})",
     )
     axis.plot([0, 1], [0, 1], color="navy", linewidth=2, linestyle="--")
     axis.set_xlim(0.0, 1.0)
