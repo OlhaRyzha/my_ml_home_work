@@ -1,20 +1,25 @@
-"""Reusable helpers for evaluating binary classification models."""
+"""Reusable helpers for evaluating classification models."""
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from numpy.typing import NDArray
+from sklearn.base import clone
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
+    ConfusionMatrixDisplay,
     accuracy_score,
     auc,
     confusion_matrix,
     f1_score,
+    precision_score,
+    recall_score,
     roc_auc_score,
     roc_curve,
 )
+from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import Pipeline
 
 
@@ -153,6 +158,128 @@ def compute_auroc_and_build_roc(
     axis.set_title(f"Receiver Operating Characteristic (ROC) Curve for {name}")
     axis.legend(loc="lower right")
     return roc_auc
+
+
+def evaluate_multiclass_model(
+    model: Pipeline,
+    inputs: pd.DataFrame,
+    targets: pd.Series,
+    name: str = "",
+) -> NDArray[np.object_]:
+    """Print multiclass metrics and confusion matrices, and return predictions."""
+    predictions = np.asarray(model.predict(inputs), dtype=object)
+    probabilities = np.asarray(model.predict_proba(inputs), dtype=float)
+    classes = np.asarray(model.classes_, dtype=object)
+
+    accuracy = accuracy_score(targets, predictions)
+    macro_f1 = f1_score(targets, predictions, average="macro")
+    macro_auroc = roc_auc_score(
+        targets,
+        probabilities,
+        labels=classes,
+        multi_class="ovr",
+        average="macro",
+    )
+
+    print(f"{name} Accuracy: {accuracy:.4f}")
+    print(f"{name} Macro F1: {macro_f1:.4f}")
+    print(f"{name} Macro AUROC: {macro_auroc:.4f}")
+
+    raw_matrix = confusion_matrix(targets, predictions, labels=classes)
+    normalized_matrix = confusion_matrix(
+        targets,
+        predictions,
+        labels=classes,
+        normalize="true",
+    )
+    row_labels = [f"Actual {label}" for label in classes]
+    column_labels = [f"Predicted {label}" for label in classes]
+    raw_matrix_table = pd.DataFrame(
+        raw_matrix,
+        index=row_labels,
+        columns=column_labels,
+    )
+    normalized_matrix_table = pd.DataFrame(
+        normalized_matrix,
+        index=row_labels,
+        columns=column_labels,
+    )
+
+    print(f"\n{name} Confusion Matrix — кількість:")
+    print(raw_matrix_table.to_string())
+    print(f"\n{name} Confusion Matrix — частка:")
+    print(normalized_matrix_table.round(3).to_string())
+
+    matrix_display = ConfusionMatrixDisplay(
+        confusion_matrix=normalized_matrix,
+        display_labels=classes,
+    )
+    matrix_display.plot(values_format=".2f", cmap="Blues")
+    matrix_display.ax_.set_title(f"{name} Normalized Confusion Matrix")
+
+    return predictions
+
+
+def build_ovr_logistic_pipeline(
+    preprocessor: ColumnTransformer | None = None,
+    *,
+    max_iter: int = 1_000,
+    random_state: int = 42,
+) -> Pipeline:
+    """Build an independent One-vs-Rest logistic regression pipeline."""
+    classifier = OneVsRestClassifier(
+        LogisticRegression(
+            solver="lbfgs",
+            max_iter=max_iter,
+            random_state=random_state,
+        )
+    )
+
+    if preprocessor is None:
+        return Pipeline([("classifier", classifier)])
+
+    return Pipeline(
+        [
+            ("preprocessor", clone(preprocessor)),
+            ("classifier", classifier),
+        ]
+    )
+
+
+def compare_multiclass_predictions(
+    predictions: dict[str, NDArray[np.object_]],
+    targets: pd.Series,
+) -> pd.DataFrame:
+    """Compare the main validation metrics for multiclass predictions."""
+    metrics = {}
+
+    for name, model_predictions in predictions.items():
+        metrics[name] = [
+            accuracy_score(targets, model_predictions),
+            precision_score(
+                targets,
+                model_predictions,
+                average="macro",
+                zero_division=0,
+            ),
+            recall_score(
+                targets,
+                model_predictions,
+                average="macro",
+                zero_division=0,
+            ),
+            f1_score(
+                targets,
+                model_predictions,
+                average="macro",
+                zero_division=0,
+            ),
+        ]
+
+    return pd.DataFrame(
+        metrics,
+        index=["Accuracy", "Macro Precision", "Macro Recall", "Macro F1"],
+    )
 
 
 def predict_majority_class(

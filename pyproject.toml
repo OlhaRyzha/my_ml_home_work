@@ -5,6 +5,7 @@ description = "Homework notebooks for mathematics, statistics, EDA, and machine 
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [
+    "imblearn>=0.0",
     "ipykernel>=7.3,<8",
     "jupyterlab>=4.4,<5",
     "matplotlib>=3.10,<4",
