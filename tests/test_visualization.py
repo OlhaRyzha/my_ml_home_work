@@ -8,6 +8,7 @@ from ml_homework.visualization import (
     correlation_heatmap,
     distribution_boxplot,
     numeric_vs_categorical_analysis,
+    plot_auroc_by_max_depth,
     plot_regression_predictions,
 )
 
@@ -42,6 +43,23 @@ def test_plot_regression_predictions_draws_all_lines() -> None:
 
     assert len(axis.lines) == len(predictions)
     assert [line.get_label() for line in axis.lines] == list(predictions)
+    plt.close(figure)
+
+
+def test_plot_auroc_by_max_depth_labels_both_curves() -> None:
+    scores = pd.DataFrame(
+        {
+            "Max Depth": [1, 2, 3],
+            "Training AUROC": [0.7, 0.8, 0.9],
+            "Validation AUROC": [0.68, 0.78, 0.76],
+        }
+    )
+
+    figure, axis = plot_auroc_by_max_depth(scores)
+
+    assert [line.get_label() for line in axis.lines] == ["Training", "Validation"]
+    assert axis.get_xlabel() == "Max Depth"
+    assert axis.get_ylabel() == "AUROC"
     plt.close(figure)
 
 

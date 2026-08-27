@@ -13,9 +13,11 @@ from ml_homework.classification import (
     build_ovr_logistic_pipeline,
     compare_classification_metrics,
     compare_multiclass_predictions,
+    compute_auroc,
     compute_auroc_and_build_roc,
     evaluate_multiclass_model,
     get_f1_score,
+    max_depth_auroc,
     predict_and_plot,
     predict_majority_class,
     predict_raw_df,
@@ -127,6 +129,38 @@ def test_compute_auroc_and_build_roc_returns_score_and_plot(
     assert axis.get_xlabel() == "False Positive Rate"
     assert len(axis.lines) == 2
     plt.close(figure)
+
+
+def test_compute_auroc_returns_score_without_plot(
+    fitted_classifier: tuple[LogisticRegression, pd.DataFrame, pd.Series],
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    model, inputs, targets = fitted_classifier
+    plt.close("all")
+
+    score = compute_auroc(model, inputs, targets, "Validation")
+
+    assert score == pytest.approx(1.0)
+    assert capsys.readouterr().out.strip() == "AUROC for Validation: 1.0000"
+    assert plt.get_fignums() == []
+
+
+def test_max_depth_auroc_returns_train_and_validation_scores(
+    fitted_classifier: tuple[LogisticRegression, pd.DataFrame, pd.Series],
+) -> None:
+    _, inputs, targets = fitted_classifier
+
+    result = max_depth_auroc(
+        2,
+        inputs,
+        targets,
+        inputs,
+        targets,
+    )
+
+    assert result["Max Depth"] == 2
+    assert result["Training AUROC"] == pytest.approx(1.0)
+    assert result["Validation AUROC"] == pytest.approx(1.0)
 
 
 def test_evaluate_multiclass_model_prints_metrics_and_confusion_matrices(
