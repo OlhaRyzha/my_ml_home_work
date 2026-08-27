@@ -1,5 +1,7 @@
 """Reusable helpers for evaluating classification models."""
 
+from typing import Protocol
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -21,6 +23,13 @@ from sklearn.metrics import (
 )
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import Pipeline
+from sklearn.tree import DecisionTreeClassifier
+
+
+class _ProbabilityClassifier(Protocol):
+    """Classifier interface required by binary probability metrics."""
+
+    def predict_proba(self, inputs: pd.DataFrame, /) -> NDArray[np.float64]: ...
 
 
 def add_age_group(data: pd.DataFrame) -> pd.DataFrame:
@@ -128,8 +137,50 @@ def get_f1_score(
     return score
 
 
+def compute_auroc(
+    model: _ProbabilityClassifier,
+    inputs: pd.DataFrame,
+    targets: pd.Series,
+    name: str = "",
+) -> float:
+    """Print and return binary AUROC without building a ROC curve."""
+    probabilities = np.asarray(model.predict_proba(inputs), dtype=float)[:, 1]
+    score = float(roc_auc_score(targets, probabilities))
+    print(f"AUROC for {name}: {score:.4f}")
+    return score
+
+
+def max_depth_auroc(
+    max_depth: int,
+    train_inputs: pd.DataFrame,
+    train_targets: pd.Series,
+    val_inputs: pd.DataFrame,
+    val_targets: pd.Series,
+    *,
+    random_state: int = 42,
+) -> dict[str, int | float]:
+    """Return train and validation AUROC for one decision-tree depth."""
+    model = DecisionTreeClassifier(
+        max_depth=max_depth,
+        random_state=random_state,
+    ).fit(train_inputs, train_targets)
+    train_probabilities = np.asarray(
+        model.predict_proba(train_inputs),
+        dtype=float,
+    )[:, 1]
+    val_probabilities = np.asarray(
+        model.predict_proba(val_inputs),
+        dtype=float,
+    )[:, 1]
+    return {
+        "Max Depth": max_depth,
+        "Training AUROC": float(roc_auc_score(train_targets, train_probabilities)),
+        "Validation AUROC": float(roc_auc_score(val_targets, val_probabilities)),
+    }
+
+
 def compute_auroc_and_build_roc(
-    model: LogisticRegression,
+    model: _ProbabilityClassifier,
     inputs: pd.DataFrame,
     targets: pd.Series,
     name: str = "",

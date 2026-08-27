@@ -231,7 +231,7 @@ def category_counts_by_hue(
     figure, axes_array = plt.subplots(1, 2, figsize=(14, 6))
     axes = list(axes_array)
 
-    proportions = (
+    proportions: pd.Series = (
         data.groupby(hue_column)[column].value_counts(normalize=True) * 100
     ).round(2)
     proportions.unstack(hue_column).sort_values(
@@ -299,3 +299,25 @@ def compare_category_counts(
         percentage=False,
     )
     return normalized, absolute
+
+
+def plot_auroc_by_max_depth(auroc_df: pd.DataFrame) -> tuple[Figure, Axes]:
+    """Plot train and validation AUROC across decision-tree depths."""
+    figure, axis = plt.subplots()
+    axis.plot(
+        auroc_df["Max Depth"],
+        auroc_df["Training AUROC"],
+        label="Training",
+    )
+    axis.plot(
+        auroc_df["Max Depth"],
+        auroc_df["Validation AUROC"],
+        label="Validation",
+    )
+    axis.set_title("Training vs. Validation AUROC")
+    axis.set_xticks(auroc_df["Max Depth"])
+    axis.set_xlabel("Max Depth")
+    axis.set_ylabel("AUROC")
+    axis.legend()
+    figure.tight_layout()
+    return figure, axis

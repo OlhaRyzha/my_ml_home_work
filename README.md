@@ -8,12 +8,17 @@ extracted into a tested Python package.
 
 | # | Topic | Notebook |
 | --- | ----- | -------- |
-| 01 | Linear algebra | `notebooks/01_linear_algebra/hw_2_1_matrices_and_vectors.ipynb` |
-| 02 | Calculus | `notebooks/02_calculus/hw_2_1_functions_and_derivatives.ipynb` |
-| 03 | Statistics | `notebooks/03_statistics/hw_2_1_hypothesis_testing.ipynb` |
-| 04 | EDA | `notebooks/04_eda/credit_eda.ipynb` |
-| 05 | Linear regression | `notebooks/05_linear_regression/hw_2_1_simple_linear_regression.ipynb` |
-| 05 | Multiple linear regression | `notebooks/05_linear_regression/hw_2_1_multiple_linear_regression.ipynb` |
+| 01 | Linear algebra | [Matrices and vectors](notebooks/01_linear_algebra/hw_2_1_matrices_and_vectors.ipynb) |
+| 02 | Calculus | [Functions and derivatives](notebooks/02_calculus/hw_2_1_functions_and_derivatives.ipynb) |
+| 03 | Statistics | [Hypothesis testing](notebooks/03_statistics/hw_2_1_hypothesis_testing.ipynb) |
+| 04 | EDA | [Credit EDA](notebooks/04_eda/credit_eda.ipynb) |
+| 05 | Linear regression | [Simple linear regression](notebooks/05_linear_regression/hw_2_1_simple_linear_regression.ipynb) |
+| 05 | Multiple linear regression | [Multiple linear regression](notebooks/05_linear_regression/hw_2_1_multiple_linear_regression.ipynb) |
+| 06 | Logistic regression | [Mathematical formulation](notebooks/06_logistic_regression/hw_2_2_mathematical_formulation_of_logistic_regression.ipynb) |
+| 06 | Logistic regression | [Scikit-learn implementation](notebooks/06_logistic_regression/hw_2_2_logistic_regression_with_scikit_learn.ipynb) |
+| 06 | Logistic regression | [Polynomial features and pipelines](notebooks/06_logistic_regression/hw_2_2_polynomial_features_and_pipelines.ipynb) |
+| 06 | Multiclass classification | [Imbalanced multiclass classification](notebooks/06_logistic_regression/hw_2_2_imbalanced_multiclass_classification.ipynb) |
+| 07 | Decision trees | [Decision trees](notebooks/07_decision_tree/hw_2_3_decision_trees.ipynb) |
 
 ## Project Structure
 
@@ -40,6 +45,7 @@ extracted into a tested Python package.
 | `metrics` | Evaluation metrics (RMSE) |
 | `modeling` | Linear-regression training and coefficient inspection |
 | `classification` | Binary-classification evaluation, plots, baselines, and inference |
+| `process_bank_churn` | Reusable preprocessing for bank-churn training and inference data |
 | `optimization` | Full-batch gradient descent |
 | `calculus` | Symbolic differentiation helpers |
 | `visualization` | Reusable matplotlib/seaborn plotting helpers |
