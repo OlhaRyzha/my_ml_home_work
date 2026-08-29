@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import pytest
+from numpy.typing import NDArray
 
 from ml_homework.visualization import (
     category_counts_by_hue,
@@ -9,8 +12,67 @@ from ml_homework.visualization import (
     distribution_boxplot,
     numeric_vs_categorical_analysis,
     plot_auroc_by_max_depth,
+    plot_decision_regions,
     plot_regression_predictions,
 )
+
+
+class ThresholdClassifier:
+    def predict(self, features: NDArray[np.float64]) -> NDArray[np.int64]:
+        return (features[:, 0] + features[:, 1] > 0).astype(np.int64)
+
+
+def test_plot_decision_regions_draws_regions_points_and_labels() -> None:
+    features = np.array([[-2.0, -1.0], [-1.0, -2.0], [1.0, 2.0], [2.0, 1.0]])
+    target = np.array([0, 0, 1, 1])
+
+    figure, axis = plot_decision_regions(
+        ThresholdClassifier(),
+        features,
+        target,
+        title="Decision boundary",
+        class_names={0: "Negative", 1: "Positive"},
+        grid_resolution=20,
+    )
+
+    assert len(axis.collections) >= 3
+    assert axis.get_xlabel() == "Principal Component 1"
+    assert axis.get_ylabel() == "Principal Component 2"
+    assert axis.get_title() == "Decision boundary"
+    legend = axis.get_legend()
+    assert legend is not None
+    assert [text.get_text() for text in legend.get_texts()] == [
+        "Negative",
+        "Positive",
+    ]
+    plt.close(figure)
+
+
+def test_plot_decision_regions_uses_supplied_axis() -> None:
+    figure, supplied_axis = plt.subplots()
+    features = np.array([[-1.0, -1.0], [1.0, 1.0]])
+
+    returned_figure, returned_axis = plot_decision_regions(
+        ThresholdClassifier(), features, [0, 1], axis=supplied_axis
+    )
+
+    assert returned_figure is figure
+    assert returned_axis is supplied_axis
+    plt.close(figure)
+
+
+@pytest.mark.parametrize(
+    ("features", "target"),
+    [
+        (np.ones((3, 3)), np.array([0, 1, 1])),
+        (np.ones((3, 2)), np.array([0, 1])),
+    ],
+)
+def test_plot_decision_regions_rejects_invalid_shapes(
+    features: NDArray[np.float64], target: NDArray[np.int64]
+) -> None:
+    with pytest.raises(ValueError):
+        plot_decision_regions(ThresholdClassifier(), features, target)
 
 
 def test_distribution_boxplot_returns_figure_and_axes() -> None:

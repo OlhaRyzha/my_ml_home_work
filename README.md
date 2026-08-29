@@ -19,6 +19,7 @@ extracted into a tested Python package.
 | 06 | Logistic regression | [Polynomial features and pipelines](notebooks/06_logistic_regression/hw_2_2_polynomial_features_and_pipelines.ipynb) |
 | 06 | Multiclass classification | [Imbalanced multiclass classification](notebooks/06_logistic_regression/hw_2_2_imbalanced_multiclass_classification.ipynb) |
 | 07 | Decision trees | [Decision trees](notebooks/07_decision_tree/hw_2_3_decision_trees.ipynb) |
+| 09 | Visualization | [Decision regions demo](notebooks/09_visualization/decision_regions_demo.ipynb) |
 
 ## Project Structure
 

@@ -34,6 +34,7 @@ from ml_homework.process_bank_churn import (
     preprocess_data,
     preprocess_new_data,
 )
+from ml_homework.visualization import plot_decision_regions
 
 __all__ = [
     "DATA_DIR",
@@ -56,6 +57,7 @@ __all__ = [
     "predict_and_plot",
     "predict_majority_class",
     "predict_raw_df",
+    "plot_decision_regions",
     "preprocess_data",
     "preprocess_new_data",
     "select_feature_columns",
