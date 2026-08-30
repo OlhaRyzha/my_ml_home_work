@@ -19,8 +19,7 @@ lint:
 	uv run black --check .
 
 typecheck:
-	@files="$$(find . -name '*.py' -not -path './.venv/*' -not -path './.git/*')"; \
-	if [ -n "$$files" ]; then uv run mypy $$files; else echo "mypy: no Python files to check"; fi
+	uv run mypy
 
 test:
 	uv run pytest
