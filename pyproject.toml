@@ -5,9 +5,11 @@ description = "Homework notebooks for mathematics, statistics, EDA, and machine 
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [
+    "hyperopt>=0.3.0",
     "imblearn>=0.0",
     "ipykernel>=7.3,<8",
     "jupyterlab>=4.4,<5",
+    "lightgbm>=4.7.0",
     "matplotlib>=3.10,<4",
     "numpy>=2.4,<3",
     "pandas>=3.0,<4",
@@ -18,6 +20,7 @@ dependencies = [
     "seaborn>=0.13,<0.14",
     "statsmodels>=0.14,<0.15",
     "sympy>=1.14,<2",
+    "xgboost>=3.4.1",
 ]
 
 [build-system]
