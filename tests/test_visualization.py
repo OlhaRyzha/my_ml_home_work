@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 from numpy.typing import NDArray
 
+from ml_homework.preprocessing.customer_marketing import prepare_cluster_viz_df
 from ml_homework.visualization import (
     category_counts_by_hue,
     compare_boxplots,
@@ -11,11 +12,12 @@ from ml_homework.visualization import (
     correlation_heatmap,
     distribution_boxplot,
     numeric_vs_categorical_analysis,
+)
+from ml_homework.visualization.clustering import plot_clusters
+from ml_homework.visualization.models import (
     plot_auroc_by_max_depth,
-    plot_clusters,
     plot_decision_regions,
     plot_regression_predictions,
-    prepare_cluster_viz_df,
 )
 
 

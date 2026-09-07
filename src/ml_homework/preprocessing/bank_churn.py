@@ -4,10 +4,14 @@ from typing import TypedDict
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from ml_homework.classification import add_age_group
+from ml_homework.preprocessing import (
+    encode_categorical_features,
+    scale_numeric_features,
+    split_train_validation,
+    transform_features,
+)
 
 TARGET_COLUMN = "Exited"
 NUMERIC_COLUMNS = ["CreditScore", "Age", "Balance", "EstimatedSalary"]
@@ -44,77 +48,6 @@ def select_bank_churn_inputs(raw_df: pd.DataFrame) -> pd.DataFrame:
     if missing_columns:
         raise ValueError(f"Missing required columns: {missing_columns}")
     return inputs.loc[:, required_columns].copy()
-
-
-def split_train_validation(
-    inputs: pd.DataFrame,
-    targets: pd.Series,
-    *,
-    validation_size: float = 0.25,
-    random_state: int = 42,
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-    """Create reproducible stratified train and validation subsets."""
-    X_train, X_val, train_targets, val_targets = train_test_split(
-        inputs,
-        targets,
-        test_size=validation_size,
-        random_state=random_state,
-        stratify=targets,
-    )
-    return X_train, X_val, train_targets, val_targets
-
-
-def scale_numeric_features(
-    train_inputs: pd.DataFrame,
-    val_inputs: pd.DataFrame,
-    *,
-    enabled: bool,
-) -> tuple[pd.DataFrame, pd.DataFrame, StandardScaler | None]:
-    """Optionally fit a scaler on train inputs and transform both subsets."""
-    if not enabled:
-        return train_inputs.copy(), val_inputs.copy(), None
-
-    scaler = StandardScaler()
-    scaled_train = pd.DataFrame(
-        np.asarray(scaler.fit_transform(train_inputs), dtype=float),
-        columns=train_inputs.columns,
-        index=train_inputs.index,
-    )
-    scaled_val = pd.DataFrame(
-        np.asarray(scaler.transform(val_inputs), dtype=float),
-        columns=val_inputs.columns,
-        index=val_inputs.index,
-    )
-    return scaled_train, scaled_val, scaler
-
-
-def encode_categorical_features(
-    train_inputs: pd.DataFrame,
-    val_inputs: pd.DataFrame,
-) -> tuple[pd.DataFrame, pd.DataFrame, OneHotEncoder]:
-    """Fit one-hot encoding on train categories and transform both subsets."""
-    encoder = OneHotEncoder(sparse_output=False, handle_unknown="ignore")
-    encoded_train_values = np.asarray(
-        encoder.fit_transform(train_inputs),
-        dtype=float,
-    )
-    encoded_val_values = np.asarray(
-        encoder.transform(val_inputs),
-        dtype=float,
-    )
-    encoded_columns = encoder.get_feature_names_out(train_inputs.columns).tolist()
-
-    encoded_train = pd.DataFrame(
-        encoded_train_values,
-        columns=encoded_columns,
-        index=train_inputs.index,
-    )
-    encoded_val = pd.DataFrame(
-        encoded_val_values,
-        columns=encoded_columns,
-        index=val_inputs.index,
-    )
-    return encoded_train, encoded_val, encoder
 
 
 def preprocess_data(
@@ -171,25 +104,8 @@ def preprocess_new_data(
 ) -> pd.DataFrame:
     """Transform new rows with preprocessing objects fitted on training data."""
     inputs = select_bank_churn_inputs(raw_df)
-    numeric_inputs = inputs[NUMERIC_COLUMNS]
-    if scaler is not None:
-        numeric_inputs = pd.DataFrame(
-            np.asarray(scaler.transform(numeric_inputs), dtype=float),
-            columns=NUMERIC_COLUMNS,
-            index=inputs.index,
-        )
-    else:
-        numeric_inputs = numeric_inputs.copy()
-
-    encoded_columns = encoder.get_feature_names_out(CATEGORICAL_COLUMNS).tolist()
-    categorical_inputs = pd.DataFrame(
-        np.asarray(
-            encoder.transform(inputs[CATEGORICAL_COLUMNS]),
-            dtype=float,
-        ),
-        columns=encoded_columns,
-        index=inputs.index,
-    )
+    numeric_inputs = transform_features(inputs[NUMERIC_COLUMNS], scaler)
+    categorical_inputs = transform_features(inputs[CATEGORICAL_COLUMNS], encoder)
     processed_inputs = pd.concat([numeric_inputs, categorical_inputs], axis="columns")
 
     missing_columns = [
@@ -198,3 +114,14 @@ def preprocess_new_data(
     if missing_columns:
         raise ValueError(f"Missing processed columns: {missing_columns}")
     return processed_inputs.loc[:, input_cols]
+
+
+def add_age_group(data: pd.DataFrame) -> pd.DataFrame:
+    """Return a copy with age encoded into fixed, interpretable groups."""
+    result = data.copy()
+    result["AgeGroup"] = pd.cut(
+        result["Age"],
+        bins=[-np.inf, 30, 35, 40, 45, 50, 60, np.inf],
+        labels=["up_to_30", "31_35", "36_40", "41_45", "46_50", "51_60", "over_60"],
+    )
+    return result

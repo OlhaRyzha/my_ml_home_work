@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
+import pytest
 
-from ml_homework.process_bank_churn import preprocess_data, preprocess_new_data
+from ml_homework.preprocessing.bank_churn import preprocess_data, preprocess_new_data
 
 
 def bank_churn_data() -> pd.DataFrame:
@@ -95,3 +96,21 @@ def test_preprocess_new_data_reuses_fitted_encoder_and_column_order() -> None:
         column for column in input_cols if column.startswith("Geography_")
     ]
     assert processed[geography_columns].to_numpy().sum() == 0
+
+
+@pytest.mark.parametrize("scale_numeric", [False, True])
+def test_inference_matches_both_training_and_validation_transforms(
+    scale_numeric: bool,
+) -> None:
+    raw = bank_churn_data()
+    original = raw.copy(deep=True)
+    data = preprocess_data(raw, scaler_numeric=scale_numeric)
+    for expected in (data["X_train"], data["X_val"]):
+        actual = preprocess_new_data(
+            raw.loc[expected.index].drop(columns="Exited"),
+            data["input_cols"],
+            data["scaler"],
+            data["encoder"],
+        )
+        pd.testing.assert_frame_equal(actual, expected)
+    pd.testing.assert_frame_equal(raw, original)

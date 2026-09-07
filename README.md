@@ -45,11 +45,45 @@ extracted into a tested Python package.
 | `eda` | Missing-value summaries, IQR outlier bounds, feature bucketing |
 | `metrics` | Evaluation metrics (RMSE) |
 | `modeling` | Linear-regression training and coefficient inspection |
-| `classification` | Binary-classification evaluation, plots, baselines, and inference |
-| `process_bank_churn` | Reusable preprocessing for bank-churn training and inference data |
+| `classification` | Classifier construction, prediction, and score comparisons |
+| `preprocessing` | Column selection, stratified splitting, train-fitted scaling/encoding |
+| `preprocessing.bank_churn` | Bank-specific feature rules and training/inference workflow |
+| `preprocessing.customer_marketing` | Marketing totals and cluster-label preparation |
 | `optimization` | Full-batch gradient descent |
-| `calculus` | Symbolic differentiation helpers |
-| `visualization` | Reusable matplotlib/seaborn plotting helpers |
+| `calculus` | Numerical differentiation helpers |
+| `visualization` | Exploratory plots: distributions, categories, outliers |
+| `visualization.models` | Decision regions, regression predictions, tree-depth curves |
+| `visualization.classification` | Confusion/ROC plots and notebook classification reports |
+| `visualization.clustering` | Cluster scatterplots and elbow curves |
+| `clustering` | K-means fitting, evaluation, and cluster summaries |
+
+### Choosing where code belongs
+
+Keep the existing `src/ml_homework` package layout. Group code by responsibility
+rather than adding a catch-all `helpers` directory. Small, cohesive modules stay
+flat; only preprocessing and visualization currently warrant subpackages.
+Their `__init__.py` files implement shared operations, not forwarding-only imports.
+
+- Import from the owning module, for example
+  `from ml_homework.preprocessing.bank_churn import preprocess_data`.
+- Keep dataset column names and feature rules in dataset modules.
+- Shared transforms fit on training rows and reuse those fitted objects for
+  validation/inference. `transform_features` never fits and preserves row indices.
+- `prepare_clustering_features` fits a fresh exploratory transform on every call;
+  it must not be used to preprocess held-out data independently.
+- Plot functions accept data or predictions. `plot_binary_confusion_matrix` and
+  `plot_roc_curve` return `(Figure, Axes)` without printing or predicting.
+- Named notebook reports (`predict_and_plot`, `compute_auroc_and_build_roc`,
+  `evaluate_multiclass_model`, regression `*_show_*`) deliberately orchestrate
+  multiple steps for teaching. Prefer computation/plot primitives for reuse.
+- Preserve the established root-level API for existing notebooks. Moved functions
+  use new direct module paths; the repository notebooks have been migrated.
+
+Architecture references: [PyPA src layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
+and [scikit-learn common pitfalls](https://scikit-learn.org/stable/common_pitfalls.html).
+The folder boundaries above are a project-specific design choice. For new
+cross-validation workflows, prefer scikit-learn pipelines so each fold fits its
+own preprocessing.
 
 Anything used by more than one notebook lives here, with a matching test in
 `tests/`. Notebooks resolve data paths via `ml_homework.paths` — no hardcoded

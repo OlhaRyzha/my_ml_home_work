@@ -9,18 +9,22 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from ml_homework.classification import (
-    add_age_group,
     build_ovr_logistic_pipeline,
     compare_classification_metrics,
     compare_multiclass_predictions,
     compute_auroc,
-    compute_auroc_and_build_roc,
-    evaluate_multiclass_model,
     get_f1_score,
     max_depth_auroc,
-    predict_and_plot,
     predict_majority_class,
     predict_raw_df,
+)
+from ml_homework.preprocessing.bank_churn import add_age_group
+from ml_homework.visualization.classification import (
+    compute_auroc_and_build_roc,
+    evaluate_multiclass_model,
+    plot_binary_confusion_matrix,
+    plot_roc_curve,
+    predict_and_plot,
 )
 
 
@@ -273,3 +277,22 @@ def test_predict_raw_df_transforms_copy_and_preserves_probability_precision() ->
     np.testing.assert_allclose(probabilities, expected)
     assert np.any(probabilities != probabilities.round(2))
     assert raw_inputs.columns.tolist() == ["numeric", "category"]
+
+
+def test_classification_plots_accept_predictions_without_model_or_printing(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    matrix_figure, matrix_axis = plot_binary_confusion_matrix(
+        [0, 0, 1, 1], [0, 1, 0, 1]
+    )
+    roc_figure, roc_axis = plot_roc_curve([0, 0, 1, 1], [0.1, 0.7, 0.3, 0.9])
+    assert {text.get_text() for text in matrix_axis.texts} == {
+        "TN\n50.0%",
+        "FP\n50.0%",
+        "FN\n50.0%",
+        "TP\n50.0%",
+    }
+    assert roc_axis.lines[0].get_label() == "ROC curve (area = 0.7500)"
+    assert capsys.readouterr().out == ""
+    plt.close(matrix_figure)
+    plt.close(roc_figure)

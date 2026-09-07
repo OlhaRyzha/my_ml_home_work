@@ -1,16 +1,12 @@
-"""Public project configuration used by notebooks and Python modules."""
+"""Established notebook API; new code should import from the owning module."""
 
 from ml_homework.classification import (
-    add_age_group,
     build_ovr_logistic_pipeline,
     compare_classification_metrics,
     compare_multiclass_predictions,
     compute_auroc,
-    compute_auroc_and_build_roc,
-    evaluate_multiclass_model,
     get_f1_score,
     max_depth_auroc,
-    predict_and_plot,
     predict_majority_class,
     predict_raw_df,
 )
@@ -35,17 +31,20 @@ from ml_homework.paths import (
     RAW_DATA_DIR,
 )
 from ml_homework.preprocessing import prepare_clustering_features
-from ml_homework.process_bank_churn import (
+from ml_homework.preprocessing.bank_churn import (
     PreprocessedData,
+    add_age_group,
     preprocess_data,
     preprocess_new_data,
 )
-from ml_homework.visualization import (
-    plot_customer_clusters,
-    plot_decision_regions,
-    plot_elbow,
-    prepare_cluster_viz_df,
+from ml_homework.preprocessing.customer_marketing import prepare_cluster_viz_df
+from ml_homework.visualization.classification import (
+    compute_auroc_and_build_roc,
+    evaluate_multiclass_model,
+    predict_and_plot,
 )
+from ml_homework.visualization.clustering import plot_customer_clusters, plot_elbow
+from ml_homework.visualization.models import plot_decision_regions
 
 __all__ = [
     "summarize_customer_clusters",
