@@ -96,9 +96,12 @@ def iqr_bounds(series: pd.Series, multiplier: float = 1.5) -> tuple[float, float
     """Return lower and upper Tukey fences for a numeric series."""
     if multiplier <= 0:
         raise ValueError("multiplier must be positive")
+
     numeric = pd.to_numeric(series, errors="coerce").dropna()
+
     if numeric.empty:
         raise ValueError("series must contain numeric values")
+
     first_quartile = float(numeric.quantile(0.25))
     third_quartile = float(numeric.quantile(0.75))
     spread = third_quartile - first_quartile

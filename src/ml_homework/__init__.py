@@ -14,6 +14,11 @@ from ml_homework.classification import (
     predict_majority_class,
     predict_raw_df,
 )
+from ml_homework.clustering import (
+    evaluate_kmeans,
+    fit_kmeans,
+    summarize_customer_clusters,
+)
 from ml_homework.eda import get_columns_summary
 from ml_homework.metrics import compare_regression_metrics
 from ml_homework.modeling import (
@@ -29,14 +34,25 @@ from ml_homework.paths import (
     PROJECT_ROOT,
     RAW_DATA_DIR,
 )
+from ml_homework.preprocessing import prepare_clustering_features
 from ml_homework.process_bank_churn import (
     PreprocessedData,
     preprocess_data,
     preprocess_new_data,
 )
-from ml_homework.visualization import plot_decision_regions
+from ml_homework.visualization import (
+    plot_customer_clusters,
+    plot_decision_regions,
+    plot_elbow,
+    prepare_cluster_viz_df,
+)
 
 __all__ = [
+    "summarize_customer_clusters",
+    "evaluate_kmeans",
+    "fit_kmeans",
+    "plot_elbow",
+    "plot_customer_clusters",
     "DATA_DIR",
     "PROCESSED_DATA_DIR",
     "PROJECT_ROOT",
@@ -58,7 +74,9 @@ __all__ = [
     "predict_majority_class",
     "predict_raw_df",
     "plot_decision_regions",
+    "prepare_cluster_viz_df",
     "preprocess_data",
+    "prepare_clustering_features",
     "preprocess_new_data",
     "select_feature_columns",
     "significant_ols_coefficients",
