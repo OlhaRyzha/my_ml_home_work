@@ -15,6 +15,13 @@ from ml_homework.clustering import (
     fit_kmeans,
     summarize_customer_clusters,
 )
+from ml_homework.dimensionality_reduction import (
+    build_pca_kmeans_pipeline,
+    fit_pca_kmeans,
+    fit_tsne_embedding,
+    summarize_standardized_clusters,
+    top_loadings,
+)
 from ml_homework.eda import get_columns_summary
 from ml_homework.metrics import compare_regression_metrics
 from ml_homework.modeling import (
@@ -48,8 +55,12 @@ from ml_homework.visualization.models import plot_decision_regions
 
 __all__ = [
     "summarize_customer_clusters",
+    "summarize_standardized_clusters",
+    "top_loadings",
     "evaluate_kmeans",
     "fit_kmeans",
+    "fit_pca_kmeans",
+    "fit_tsne_embedding",
     "plot_elbow",
     "plot_customer_clusters",
     "DATA_DIR",
@@ -59,6 +70,7 @@ __all__ = [
     "RAW_DATA_DIR",
     "add_age_group",
     "build_ovr_logistic_pipeline",
+    "build_pca_kmeans_pipeline",
     "compare_classification_metrics",
     "compare_multiclass_predictions",
     "compute_auroc",

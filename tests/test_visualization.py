@@ -12,6 +12,7 @@ from ml_homework.visualization import (
     correlation_heatmap,
     distribution_boxplot,
     numeric_vs_categorical_analysis,
+    plot_correlation_heatmap,
 )
 from ml_homework.visualization.clustering import plot_clusters
 from ml_homework.visualization.models import (
@@ -129,6 +130,30 @@ def test_correlation_heatmap_returns_figure() -> None:
     corr = pd.DataFrame({"a": [1.0, 0.9], "b": [0.9, 1.0]}, index=["a", "b"])
     figure, _ = correlation_heatmap(corr)
     plt.close(figure)
+
+
+def test_plot_correlation_heatmap_masks_upper_triangle() -> None:
+    corr = pd.DataFrame(
+        [[1.0, 0.9, -0.2], [0.9, 1.0, 0.4], [-0.2, 0.4, 1.0]],
+        columns=["a", "b", "c"],
+        index=["a", "b", "c"],
+    )
+
+    figure, axis = plot_correlation_heatmap(corr)
+
+    assert len(axis.texts) == 6
+    color_array = axis.collections[0].get_array()
+    assert isinstance(color_array, np.ma.MaskedArray)
+    np.testing.assert_array_equal(
+        color_array.mask,
+        np.triu(np.ones((3, 3), dtype=bool), k=1),
+    )
+    plt.close(figure)
+
+
+def test_plot_correlation_heatmap_rejects_non_square_input() -> None:
+    with pytest.raises(ValueError, match="square dataframe"):
+        plot_correlation_heatmap(pd.DataFrame([[1.0, 0.5]]))
 
 
 def test_plot_regression_predictions_draws_all_lines() -> None:

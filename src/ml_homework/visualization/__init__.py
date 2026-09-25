@@ -9,6 +9,12 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from ml_homework.eda import upper_outlier_bound
+from ml_homework.visualization.dimensionality_reduction import (
+    plot_embedding_clusters as plot_embedding_clusters,
+)
+from ml_homework.visualization.heatmaps import (
+    plot_correlation_heatmap as plot_correlation_heatmap,
+)
 
 
 def boxplots_for_columns(

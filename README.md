@@ -20,6 +20,10 @@ extracted into a tested Python package.
 | 06 | Multiclass classification | [Imbalanced multiclass classification](notebooks/06_logistic_regression/hw_2_2_imbalanced_multiclass_classification.ipynb) |
 | 07 | Decision trees | [Decision trees](notebooks/07_decision_tree/hw_2_3_decision_trees.ipynb) |
 | 09 | Visualization | [Decision regions demo](notebooks/09_visualization/decision_regions_demo.ipynb) |
+| 10 | Boosting | [Boosting algorithms](notebooks/10_boosting/hw_2_4_boosting_algorithms.ipynb) |
+| 11 | Clustering | [Clustering algorithms](notebooks/11_clustering%20algorithms/hw_3_1_clustering%20algorithms.ipynb) |
+| 12 | Dimensionality reduction | [PCA and t-SNE](notebooks/12_dimensionality_reduction/hw_3_2_dimensionality_reduction.ipynb) |
+| 12 | Dimensionality reduction | [Dimensionality-reduction notes](notebooks/12_dimensionality_reduction/Методи_пониження_розмірності.ipynb) |
 
 ## Project Structure
 
@@ -51,11 +55,38 @@ extracted into a tested Python package.
 | `preprocessing.customer_marketing` | Marketing totals and cluster-label preparation |
 | `optimization` | Full-batch gradient descent |
 | `calculus` | Numerical differentiation helpers |
+| `dimensionality_reduction` | Standardized PCA + K-Means, t-SNE embeddings, cluster profiles, and PCA loading summaries |
 | `visualization` | Exploratory plots: distributions, categories, outliers |
 | `visualization.models` | Decision regions, regression predictions, tree-depth curves |
 | `visualization.classification` | Confusion/ROC plots and notebook classification reports |
 | `visualization.clustering` | Cluster scatterplots and elbow curves |
+| `visualization.dimensionality_reduction` | Reusable 2D and 3D Plotly plots for PCA/t-SNE embeddings |
 | `clustering` | K-means fitting, evaluation, and cluster summaries |
+
+### Dimensionality-reduction helpers
+
+The dimensionality-reduction notebook uses tested helpers instead of repeating
+pipeline and plotting code in each cell:
+
+```python
+from ml_homework.dimensionality_reduction import (
+    fit_pca_kmeans,
+    fit_tsne_embedding,
+    summarize_standardized_clusters,
+    top_loadings,
+)
+from ml_homework.visualization.dimensionality_reduction import (
+    plot_embedding_clusters,
+)
+```
+
+`fit_pca_kmeans` standardizes features, fits PCA and K-Means, and returns the
+pipeline, cluster labels, PCA embedding, and silhouette score. `fit_tsne_embedding`
+standardizes features and fits t-SNE for visualization. t-SNE is intentionally
+not placed inside a scikit-learn `Pipeline`: it provides `fit_transform`, but no
+standalone `transform` method. `top_loadings` returns the strongest absolute
+loadings per principal component, while `summarize_standardized_clusters`
+returns per-cluster feature means in standardized units.
 
 ### Choosing where code belongs
 
