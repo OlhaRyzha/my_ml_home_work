@@ -62,6 +62,7 @@ extracted into a tested Python package.
 | `visualization.clustering` | Cluster scatterplots and elbow curves |
 | `visualization.dimensionality_reduction` | Reusable 2D and 3D Plotly plots for PCA/t-SNE embeddings |
 | `clustering` | K-means fitting, evaluation, and cluster summaries |
+| `text` | Vocabulary coverage and train-only Bag-of-Words fitting |
 
 ### Dimensionality-reduction helpers
 

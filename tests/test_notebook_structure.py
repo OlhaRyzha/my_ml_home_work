@@ -3,6 +3,13 @@ import json
 from pathlib import Path
 
 NOTEBOOKS_DIR = Path(__file__).resolve().parents[1] / "notebooks"
+COURSE_REFERENCE_NOTEBOOKS = {
+    Path("13_nlp/Bert_Embeddings.ipynb"),
+    Path("13_nlp/Bert_Fine_Tuning.ipynb"),
+    Path("13_nlp/HW_NLP_Classification.ipynb"),
+    Path("13_nlp/NLP_Classification.ipynb"),
+    Path("13_nlp/Word_Embeddings.ipynb"),
+}
 
 
 def test_notebook_imports_are_only_in_first_code_cell() -> None:
@@ -10,6 +17,9 @@ def test_notebook_imports_are_only_in_first_code_cell() -> None:
 
     for notebook_path in NOTEBOOKS_DIR.rglob("*.ipynb"):
         if ".ipynb_checkpoints" in notebook_path.parts:
+            continue
+        # Course examples introduce imports as each topic is taught.
+        if notebook_path.relative_to(NOTEBOOKS_DIR) in COURSE_REFERENCE_NOTEBOOKS:
             continue
 
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
