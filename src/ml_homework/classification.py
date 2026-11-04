@@ -1,10 +1,12 @@
 """Reusable helpers for evaluating classification models."""
 
+from collections.abc import Sequence
 from typing import Protocol
 
 import numpy as np
 import pandas as pd
-from numpy.typing import NDArray
+from numpy.typing import ArrayLike, NDArray
+from scipy.sparse import csr_matrix
 from sklearn.base import clone
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
@@ -17,6 +19,7 @@ from sklearn.metrics import (
 )
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import LabelEncoder
 from sklearn.tree import DecisionTreeClassifier
 
 
@@ -24,6 +27,14 @@ class _ProbabilityClassifier(Protocol):
     """Classifier interface required by binary probability metrics."""
 
     def predict_proba(self, inputs: pd.DataFrame, /) -> NDArray[np.float64]: ...
+
+
+class _SparseProbabilityClassifier(Protocol):
+    """Fitted classifier that predicts labels and probabilities from sparse text."""
+
+    def predict(self, inputs: csr_matrix, /) -> ArrayLike: ...
+
+    def predict_proba(self, inputs: csr_matrix, /) -> ArrayLike: ...
 
 
 def compare_classification_metrics(
@@ -178,6 +189,70 @@ def compare_multiclass_predictions(
     return pd.DataFrame(
         metrics,
         index=["Accuracy", "Macro Precision", "Macro Recall", "Macro F1"],
+    )
+
+
+def multiclass_scores(
+    targets: pd.Series,
+    predictions: ArrayLike,
+    probabilities: ArrayLike,
+    *,
+    labels: Sequence[str],
+) -> dict[str, float]:
+    """Score one multiclass prediction with probability columns in label order."""
+    return {
+        "Accuracy": float(accuracy_score(targets, predictions)),
+        "F1-macro": float(f1_score(targets, predictions, average="macro")),
+        "ROC-AUC": float(
+            roc_auc_score(
+                targets,
+                probabilities,
+                labels=labels,
+                multi_class="ovr",
+                average="macro",
+            )
+        ),
+    }
+
+
+def compare_multiclass_models(
+    models: Sequence[
+        tuple[str, _SparseProbabilityClassifier, csr_matrix, LabelEncoder | None]
+    ],
+    targets: pd.Series,
+    *,
+    labels: Sequence[str],
+) -> pd.DataFrame:
+    """Evaluate fitted text classifiers on their held-out sparse features.
+
+    An optional label encoder decodes models trained on integer class IDs.
+    Probability columns must follow ``labels`` order for every model.
+    """
+    rows: list[dict[str, str | float]] = []
+    for name, model, features, label_encoder in models:
+        predictions = model.predict(features)
+        if label_encoder is not None:
+            predictions = label_encoder.inverse_transform(np.asarray(predictions))
+        rows.append(
+            {
+                "Model": name,
+                **multiclass_scores(
+                    targets,
+                    predictions,
+                    model.predict_proba(features),
+                    labels=labels,
+                ),
+            }
+        )
+    return pd.DataFrame(rows, columns=["Model", "Accuracy", "F1-macro", "ROC-AUC"])
+
+
+def multiclass_coefficients(
+    model: LogisticRegression, feature_names: Sequence[str]
+) -> pd.DataFrame:
+    """Align multinomial logistic-regression coefficients with their tokens."""
+    return pd.DataFrame(
+        model.coef_.T, index=list(feature_names), columns=list(model.classes_)
     )
 
 

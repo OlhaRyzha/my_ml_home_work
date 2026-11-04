@@ -3,10 +3,13 @@
 from ml_homework.classification import (
     build_ovr_logistic_pipeline,
     compare_classification_metrics,
+    compare_multiclass_models,
     compare_multiclass_predictions,
     compute_auroc,
     get_f1_score,
     max_depth_auroc,
+    multiclass_coefficients,
+    multiclass_scores,
     predict_majority_class,
     predict_raw_df,
 )
@@ -45,6 +48,12 @@ from ml_homework.preprocessing.bank_churn import (
     preprocess_new_data,
 )
 from ml_homework.preprocessing.customer_marketing import prepare_cluster_viz_df
+from ml_homework.text import (
+    count_vocabulary_coverage,
+    ensure_nltk_resources,
+    filter_sentiment_tokens,
+    fit_count_vectorizer,
+)
 from ml_homework.visualization.classification import (
     compute_auroc_and_build_roc,
     evaluate_multiclass_model,
@@ -72,6 +81,7 @@ __all__ = [
     "build_ovr_logistic_pipeline",
     "build_pca_kmeans_pipeline",
     "compare_classification_metrics",
+    "compare_multiclass_models",
     "compare_multiclass_predictions",
     "compute_auroc",
     "compute_auroc_and_build_roc",
@@ -81,6 +91,12 @@ __all__ = [
     "get_f1_score",
     "linear_regression_coefficients",
     "max_depth_auroc",
+    "multiclass_coefficients",
+    "multiclass_scores",
+    "count_vocabulary_coverage",
+    "ensure_nltk_resources",
+    "filter_sentiment_tokens",
+    "fit_count_vectorizer",
     "predict_and_plot",
     "predict_majority_class",
     "predict_raw_df",

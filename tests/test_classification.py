@@ -2,19 +2,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pytest
+from scipy.sparse import csr_matrix
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyClassifier
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
 
 from ml_homework.classification import (
     build_ovr_logistic_pipeline,
     compare_classification_metrics,
+    compare_multiclass_models,
     compare_multiclass_predictions,
     compute_auroc,
     get_f1_score,
     max_depth_auroc,
+    multiclass_coefficients,
+    multiclass_scores,
     predict_majority_class,
     predict_raw_df,
 )
@@ -241,6 +246,86 @@ def test_compare_multiclass_predictions_builds_model_columns() -> None:
     ]
     np.testing.assert_allclose(result["Perfect"], 1.0)
     assert result.loc["Macro F1", "Imperfect"] == pytest.approx(0.6555556)
+
+
+def test_multiclass_scores_uses_class_order_for_probabilities() -> None:
+    targets = pd.Series(
+        ["negative", "neutral", "positive", "negative", "neutral", "positive"]
+    )
+    predictions = np.array(
+        ["negative", "neutral", "negative", "positive", "neutral", "positive"]
+    )
+    probabilities = np.array(
+        [
+            [0.8, 0.1, 0.1],
+            [0.1, 0.8, 0.1],
+            [0.6, 0.2, 0.2],
+            [0.2, 0.1, 0.7],
+            [0.1, 0.8, 0.1],
+            [0.1, 0.1, 0.8],
+        ]
+    )
+
+    result = multiclass_scores(
+        targets,
+        predictions,
+        probabilities,
+        labels=["negative", "neutral", "positive"],
+    )
+
+    assert result["Accuracy"] == pytest.approx(2 / 3)
+    assert result["F1-macro"] == pytest.approx(2 / 3)
+    assert result["ROC-AUC"] > 0.8
+
+
+def test_compare_multiclass_models_decodes_integer_labels() -> None:
+    features = csr_matrix(
+        [[-3.0, 0.0], [-2.0, 0.0], [-0.2, 0.0], [0.2, 0.0], [2.0, 0.0], [3.0, 0.0]]
+    )
+    encoded_features = features[:, ::-1]
+    targets = pd.Series(
+        ["negative", "negative", "neutral", "neutral", "positive", "positive"]
+    )
+    label_encoder = LabelEncoder().fit(targets)
+    native = LogisticRegression(random_state=42).fit(features, targets)
+    encoded = LogisticRegression(random_state=42).fit(
+        encoded_features, label_encoder.transform(targets)
+    )
+
+    result = compare_multiclass_models(
+        [
+            ("Native", native, features, None),
+            ("Encoded", encoded, encoded_features, label_encoder),
+        ],
+        targets,
+        labels=label_encoder.classes_,
+    )
+
+    assert result["Model"].tolist() == ["Native", "Encoded"]
+    scores = result[["Accuracy", "F1-macro", "ROC-AUC"]].to_numpy(dtype=float)
+    np.testing.assert_allclose(scores[0], scores[1])
+
+
+def test_multiclass_coefficients_align_tokens_and_classes() -> None:
+    texts = ["bad", "bad awful", "okay", "okay fine", "good", "good great"]
+    targets = ["negative", "negative", "neutral", "neutral", "positive", "positive"]
+    vectorizer = CountVectorizer()
+    features = vectorizer.fit_transform(texts)
+    model = LogisticRegression(random_state=42).fit(features, targets)
+
+    result = multiclass_coefficients(model, vectorizer.get_feature_names_out())
+
+    assert result.index.tolist() == vectorizer.get_feature_names_out().tolist()
+    assert result.columns.tolist() == model.classes_.tolist()
+    coefficients = result.to_numpy(dtype=float)
+    assert (
+        coefficients[result.index.get_loc("good"), result.columns.get_loc("positive")]
+        > 0
+    )
+    assert (
+        coefficients[result.index.get_loc("bad"), result.columns.get_loc("negative")]
+        > 0
+    )
 
 
 def test_predict_majority_class_uses_input_length() -> None:
