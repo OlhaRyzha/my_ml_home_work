@@ -9,6 +9,7 @@ COURSE_REFERENCE_NOTEBOOKS = {
     Path("13_nlp/HW_NLP_Classification.ipynb"),
     Path("13_nlp/NLP_Classification.ipynb"),
     Path("13_nlp/Word_Embeddings.ipynb"),
+    Path("14_deep_learning/Вступ_в_нейронні_мережі.ipynb"),
 }
 
 
@@ -19,7 +20,11 @@ def test_notebook_imports_are_only_in_first_code_cell() -> None:
         if ".ipynb_checkpoints" in notebook_path.parts:
             continue
         # Course examples introduce imports as each topic is taught.
-        if notebook_path.relative_to(NOTEBOOKS_DIR) in COURSE_REFERENCE_NOTEBOOKS:
+        relative_path = notebook_path.relative_to(NOTEBOOKS_DIR)
+        if (
+            "course" in relative_path.parts
+            or relative_path in COURSE_REFERENCE_NOTEBOOKS
+        ):
             continue
 
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))

@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [
     "altair>=6.2.2",
+    "beautifulsoup4>=4.15.0",
+    "chromedriver-autoinstaller>=0.6.4",
     "hyperopt>=0.3.0",
     "imblearn>=0.0",
     "ipykernel>=7.3,<8",
@@ -14,16 +16,22 @@ dependencies = [
     "matplotlib>=3.10,<4",
     "nltk>=3.10.4",
     "numpy>=2.4,<3",
+    "openai>=3.49.0",
     "pandas>=3.0,<4",
     "plotly>=6.9.0",
     "pyarrow>=25.0.1",
+    "python-dotenv>=1.0",
+    "requests>=2.34.2",
     "scikit-learn>=1.7,<2",
     "scipy>=1.17,<2",
     "seaborn>=0.13,<0.14",
+    "selenium>=4.52.0",
     "statsmodels>=0.14,<0.15",
     "sympy>=1.14,<2",
     "tabulate>=0.10.0",
+    "tqdm>=4.70.0",
     "vl-convert-python>=1.9.0.post1",
+    "wordcloud>=1.9.6",
     "xgboost>=3.4.1",
 ]
 
@@ -44,10 +52,13 @@ dev = [
 [tool.black]
 line-length = 88
 target-version = ["py313"]
+# Course notebooks preserve the lesson's incremental code and formatting.
+force-exclude = '^/notebooks/[^/]+/course/'
 
 [tool.ruff]
 line-length = 88
 target-version = "py313"
+exclude = ["notebooks/*/course/*"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

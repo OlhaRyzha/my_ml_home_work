@@ -48,6 +48,15 @@ from ml_homework.preprocessing.bank_churn import (
     preprocess_new_data,
 )
 from ml_homework.preprocessing.customer_marketing import prepare_cluster_viz_df
+from ml_homework.preprocessing.weather import (
+    create_inputs_targets as create_weather_inputs_targets,
+)
+from ml_homework.preprocessing.weather import (
+    preprocess_data as preprocess_weather_data,
+)
+from ml_homework.preprocessing.weather import (
+    split_data_by_year as split_weather_data_by_year,
+)
 from ml_homework.text import (
     count_vocabulary_coverage,
     ensure_nltk_resources,
@@ -94,6 +103,7 @@ __all__ = [
     "multiclass_coefficients",
     "multiclass_scores",
     "count_vocabulary_coverage",
+    "create_weather_inputs_targets",
     "ensure_nltk_resources",
     "filter_sentiment_tokens",
     "fit_count_vectorizer",
@@ -103,10 +113,12 @@ __all__ = [
     "plot_decision_regions",
     "prepare_cluster_viz_df",
     "preprocess_data",
+    "preprocess_weather_data",
     "prepare_clustering_features",
     "preprocess_new_data",
     "select_feature_columns",
     "significant_ols_coefficients",
+    "split_weather_data_by_year",
     "train_linear_regression_show_rmse",
     "train_ols_show_summary",
 ]

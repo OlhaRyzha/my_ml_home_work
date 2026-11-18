@@ -6,24 +6,33 @@ extracted into a tested Python package.
 
 ## Notebooks
 
-| # | Topic | Notebook |
-| --- | ----- | -------- |
-| 01 | Linear algebra | [Matrices and vectors](notebooks/01_linear_algebra/hw_2_1_matrices_and_vectors.ipynb) |
-| 02 | Calculus | [Functions and derivatives](notebooks/02_calculus/hw_2_1_functions_and_derivatives.ipynb) |
-| 03 | Statistics | [Hypothesis testing](notebooks/03_statistics/hw_2_1_hypothesis_testing.ipynb) |
-| 04 | EDA | [Credit EDA](notebooks/04_eda/credit_eda.ipynb) |
-| 05 | Linear regression | [Simple linear regression](notebooks/05_linear_regression/hw_2_1_simple_linear_regression.ipynb) |
-| 05 | Multiple linear regression | [Multiple linear regression](notebooks/05_linear_regression/hw_2_1_multiple_linear_regression.ipynb) |
-| 06 | Logistic regression | [Mathematical formulation](notebooks/06_logistic_regression/hw_2_2_mathematical_formulation_of_logistic_regression.ipynb) |
-| 06 | Logistic regression | [Scikit-learn implementation](notebooks/06_logistic_regression/hw_2_2_logistic_regression_with_scikit_learn.ipynb) |
-| 06 | Logistic regression | [Polynomial features and pipelines](notebooks/06_logistic_regression/hw_2_2_polynomial_features_and_pipelines.ipynb) |
-| 06 | Multiclass classification | [Imbalanced multiclass classification](notebooks/06_logistic_regression/hw_2_2_imbalanced_multiclass_classification.ipynb) |
-| 07 | Decision trees | [Decision trees](notebooks/07_decision_tree/hw_2_3_decision_trees.ipynb) |
-| 09 | Visualization | [Decision regions demo](notebooks/09_visualization/decision_regions_demo.ipynb) |
-| 10 | Boosting | [Boosting algorithms](notebooks/10_boosting/hw_2_4_boosting_algorithms.ipynb) |
-| 11 | Clustering | [Clustering algorithms](notebooks/11_clustering%20algorithms/hw_3_1_clustering%20algorithms.ipynb) |
-| 12 | Dimensionality reduction | [PCA and t-SNE](notebooks/12_dimensionality_reduction/hw_3_2_dimensionality_reduction.ipynb) |
-| 12 | Dimensionality reduction | [Dimensionality-reduction notes](notebooks/12_dimensionality_reduction/Методи_пониження_розмірності.ipynb) |
+Course examples and homework live together in topic folders. Imported lesson notebooks are in each topic's `course/` subfolder and keep their course titles; existing homework solutions remain in place. The course examples introduce code step by step, so the project lint and notebook structure checks apply to homework notebooks outside `course/`.
+
+| Topic | Folder | Notebooks |
+| --- | --- | ---: |
+| Python basics | [00_python](notebooks/00_python/) | 7 |
+| NumPy | [00_numpy](notebooks/00_numpy/) | 1 |
+| Pandas | [00_pandas](notebooks/00_pandas/) | 3 |
+| Linear algebra | [01_linear_algebra](notebooks/01_linear_algebra/) | 2 |
+| Calculus | [02_calculus](notebooks/02_calculus/) | 2 |
+| Statistics | [03_statistics](notebooks/03_statistics/) | 4 |
+| EDA | [04_eda](notebooks/04_eda/) | 3 |
+| Linear regression | [05_linear_regression](notebooks/05_linear_regression/) | 7 |
+| Logistic regression | [06_logistic_regression](notebooks/06_logistic_regression/) | 8 |
+| Decision trees | [07_decision_tree](notebooks/07_decision_tree/) | 2 |
+| Cross validation and kNN | [08_cross_validation](notebooks/08_cross_validation/) | 3 |
+| Visualization | [09_visualization](notebooks/09_visualization/) | 2 |
+| Boosting and ensembles | [10_boosting](notebooks/10_boosting/) | 3 |
+| Clustering | [11_clustering algorithms](notebooks/11_clustering%20algorithms/) | 10 |
+| Dimensionality reduction | [12_dimensionality_reduction](notebooks/12_dimensionality_reduction/) | 2 |
+| NLP | [13_nlp](notebooks/13_nlp/) | 7 |
+| Deep learning | [14_deep_learning](notebooks/14_deep_learning/) | 1 |
+| Explainable AI | [15_explainable_ai](notebooks/15_explainable_ai/) | 1 |
+
+Some imported examples also expect `tip.csv`, `diabetes.csv`,
+`estimation_of_obesity_levels_based_on_eating_habits_and_physical_condition.csv`,
+or `california_housing_prices.csv` in `data/raw/`. These files were not in the
+linked Drive folder, so those examples need the course datasets before running.
 
 ## Project Structure
 
@@ -53,6 +62,7 @@ extracted into a tested Python package.
 | `preprocessing` | Column selection, stratified splitting, train-fitted scaling/encoding |
 | `preprocessing.bank_churn` | Bank-specific feature rules and training/inference workflow |
 | `preprocessing.customer_marketing` | Marketing totals and cluster-label preparation |
+| `preprocessing.weather` | Weather data splits and train-fitted preprocessing |
 | `optimization` | Full-batch gradient descent |
 | `calculus` | Numerical differentiation helpers |
 | `dimensionality_reduction` | Standardized PCA + K-Means, t-SNE embeddings, cluster profiles, and PCA loading summaries |
